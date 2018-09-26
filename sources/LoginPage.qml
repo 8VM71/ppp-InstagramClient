@@ -6,6 +6,7 @@ Item {
     id: root
 
     property Scale uiScale: Scale {}
+    property string title: qsTr("Авторизация")
 
     signal next
 
@@ -22,14 +23,17 @@ Item {
             uiScale: root.uiScale
 
             serviceInfo: {
-                "url_regexp": "^https://(www\\.)*instagram\\.com/(oauth|accounts/login|integrity/checkpoint/|challenge).+",
-                        "finish_regexp": "^https://client\\.loc/admin/instagram/redirect.+",
-                        "url": "https://instagram.com/oauth/authorize",
-                        "logout_url": "https://instagram.com/accounts/logout",
-                        "params": {
-                    "client_id": "89f5ac8066054a15ac7cc50e701b2803",
-                    "response_type": "token",
-                    "redirect_uri": "https://client.loc/admin/instagram/redirect"
+                    "url_regexp": "^https://(oauth|login)\\.vk\\.com/.+",
+                    "finish_regexp": "^https://oauth\\.vk\\.com/blank/\\.html.+",
+                    "url": "https://oauth.vk.com/authorize",
+                    "logout_url": "https://login.vk.com/?act=logout&hash=9e6b7189913e10fd8f&_origin=https://vk.com",
+                    "params": {
+                        "client_id": "6703476",
+                        "response_type": "token",
+                        "redirect_uri": "https://oauth.vk.com/blank.html",
+                        "scope": "offline,photos",
+                        "v": "5.52",
+                        "display": "page",
                 }
             }
         }

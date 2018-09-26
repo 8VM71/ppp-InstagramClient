@@ -3,6 +3,8 @@ import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 import QtWebEngine 1.5
 
+import "utils.js" as Utils
+
 Item {
     id: root
 
@@ -20,7 +22,7 @@ Item {
 
     QtObject {
         id: internal
-        property string loginURL: root.serviceInfo != undefined ? internal.getFullLoginUrl() : ""
+        property string loginURL: root.serviceInfo != undefined ? Utils.combineUrl(root.serviceInfo.url, root.serviceInfo.params) : ""
         property string logoutURL: root.serviceInfo != undefined ? root.serviceInfo.logoutUrl : ""
 
         function testWhiteList(urlString) {
@@ -34,15 +36,15 @@ Item {
             }
         }
 
-        function getFullLoginUrl() {
-            var url = root.serviceInfo.url + '?'
-            var params = root.serviceInfo.params
-            for (var param in params) {
-                url += '&%1=%2'.arg(param).arg(params[param])
-            }
-            console.debug(url)
-            return url
-        }
+//        function getFullLoginUrl() {
+//            var url = root.serviceInfo.url + '?'
+//            var params = root.serviceInfo.params
+//            for (var param in params) {
+//                url += '&%1=%2'.arg(param).arg(params[param])
+//            }
+//            console.debug(url)
+//            return url
+//        }
 
         function testLoginFinished(urlString) {
             var finishRegExp = new RegExp(root.serviceInfo.loginCompleteRegexp);
@@ -92,7 +94,7 @@ Item {
         maximumLineCount: 2
 
         text: (root.logined ? qsTr("Вход выполнен")
-                            : qsTr("Войдите в свой аккаунт,\n чтобы открыть доступ к Instagram"))
+                            : qsTr("Войдите в свой аккаунт,\n чтобы открыть доступ к VK"))
     }
 
 
@@ -118,6 +120,7 @@ Item {
         }
         visible: root.logined
         onClicked: {
+            root.updateLogin(false)
             webEngine.url = internal.logoutURL
         }
     }
@@ -142,8 +145,8 @@ Item {
         url: root.logined ? "" : internal.loginURL
 
         profile: WebEngineProfile {
-            persistentCookiesPolicy: WebEngineProfile.AllowPersistentCookies
-            storageName: "123"
+            persistentCookiesPolicy: WebEngineProfile.NoPersistentCookies
+            //storageName: "4"
             //httpUserAgent: "Mobile"
         }
 
@@ -187,7 +190,7 @@ Item {
                 return;
             }
 
-            console.debug("Instagram access token:",result.access_token);
+            console.debug("VK access token:",result.access_token);
             root.updateLogin(true, result.access_token)
         }
 
@@ -205,10 +208,6 @@ Item {
                 return;
             }
             request.action = WebEngineView.AcceptRequest;
-        }
-
-        Component.onCompleted: {
-            //instagramPresenter.saveCookies(webEngine.profile);
         }
 
         BusyIndicator {

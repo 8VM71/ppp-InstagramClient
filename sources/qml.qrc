@@ -4,5 +4,7 @@
         <file>LoginDialog.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>LoginPage.qml</file>
+        <file>SearchPage.qml</file>
+        <file>utils.js</file>
     </qresource>
 </RCC>
