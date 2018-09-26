@@ -5,6 +5,8 @@
         <file>qtquickcontrols2.conf</file>
         <file>LoginPage.qml</file>
         <file>SearchPage.qml</file>
+        <file>service.js</file>
         <file>utils.js</file>
+        <file>service.js</file>
     </qresource>
 </RCC>

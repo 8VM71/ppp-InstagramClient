@@ -2,6 +2,9 @@ import QtQuick 2.10
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 
+import "service.js" as S
+
+
 ApplicationWindow {
     id: window
     visible: true
@@ -71,4 +74,12 @@ ApplicationWindow {
         initialItem: "LoginPage.qml"
         anchors.fill: parent
     }
+
+
+    Component.onCompleted: {
+        var service = new S.Service();
+        service.searchUsers("a");
+
+    }
+
 }
