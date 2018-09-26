@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include "customnetworkmanagerfactory.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +12,9 @@ int main(int argc, char *argv[])
     app.setApplicationName("User rate");
 
     QQmlApplicationEngine engine;
+    CustomNetworkManagerFactory networkAccessManagerFactory(&app);
+    engine.setNetworkAccessManagerFactory(&networkAccessManagerFactory);
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
