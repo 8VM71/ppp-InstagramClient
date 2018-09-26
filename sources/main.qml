@@ -2,9 +2,6 @@ import QtQuick 2.10
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 
-import "service.js" as S
-
-
 ApplicationWindow {
     id: window
     visible: true
@@ -19,6 +16,10 @@ ApplicationWindow {
 
     Material.theme: Material.Dark
     Material.accent: Material.Purple
+
+    Settings {
+        id: appSettings
+    }
 
     header: ToolBar {
         contentHeight: toolButton.implicitHeight
@@ -54,7 +55,7 @@ ApplicationWindow {
                 text: qsTr("Авторизация")
                 width: parent.width
                 onClicked: {
-                    stackView.push("LoginPage.qml")
+                    stackView.push(loginPage)
                     drawer.close()
                 }
             }
@@ -76,10 +77,23 @@ ApplicationWindow {
     }
 
 
-    Component.onCompleted: {
-        var service = new S.Service();
-        service.searchUsers("a");
-
+    Component {
+        id: loginPage
+        LoginPage {
+            logined: appSettings.vkToken != ""
+            onNext: {
+                console.debug("Push search page")
+                stackView.push(searchPage)
+            }
+        }
     }
 
+    Component {
+        id: searchPage
+        SearchPage {
+            onNext: {
+
+            }
+        }
+    }
 }
