@@ -7,8 +7,15 @@ Item {
 
     property Scale uiScale: Scale {}
     property string title: qsTr("Авторизация")
+    property alias logined: loginDialog.logined
 
     signal next
+    signal back
+
+    onLoginedChanged: {
+        console.debug("onLoginedChanged:", logined)
+        root.next()
+    }
 
     Pane {
         Material.elevation: 6
@@ -19,6 +26,7 @@ Item {
         height: parent.height - 60 * root.uiScale.yScale
 
         LoginDialog {
+            id: loginDialog
             anchors.fill: parent
             uiScale: root.uiScale
 
@@ -35,6 +43,14 @@ Item {
                         "v": "5.52",
                         "display": "page",
                 }
+            }
+
+            onLoggedIn: {
+                appSettings.vkToken = token
+            }
+
+            onLoggedOut: {
+                appSettings.vkToken = ""
             }
         }
     }

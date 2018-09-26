@@ -17,6 +17,10 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Purple
 
+    Settings {
+        id: appSettings
+    }
+
     header: ToolBar {
         contentHeight: toolButton.implicitHeight
 
@@ -51,7 +55,7 @@ ApplicationWindow {
                 text: qsTr("Авторизация")
                 width: parent.width
                 onClicked: {
-                    stackView.push("LoginPage.qml")
+                    stackView.push(loginPage)
                     drawer.close()
                 }
             }
@@ -70,5 +74,26 @@ ApplicationWindow {
         id: stackView
         initialItem: "LoginPage.qml"
         anchors.fill: parent
+    }
+
+
+    Component {
+        id: loginPage
+        LoginPage {
+            logined: appSettings.vkToken != ""
+            onNext: {
+                console.debug("Push search page")
+                stackView.push(searchPage)
+            }
+        }
+    }
+
+    Component {
+        id: searchPage
+        SearchPage {
+            onNext: {
+
+            }
+        }
     }
 }

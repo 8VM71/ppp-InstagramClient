@@ -12,12 +12,15 @@ Item {
     property var serviceInfo: ({})
     property bool logined: false
 
-    signal autorized(var token)
+    signal loggedIn(var token)
+    signal loggedOut
 
     function updateLogin(logined, token) {
         root.logined = logined;
         if(token)
-            root.autorized(token);
+            root.loggedIn(token);
+        if(!logined)
+            root.loggedOut()
     }
 
     QtObject {
@@ -35,16 +38,6 @@ Item {
                 return false;
             }
         }
-
-//        function getFullLoginUrl() {
-//            var url = root.serviceInfo.url + '?'
-//            var params = root.serviceInfo.params
-//            for (var param in params) {
-//                url += '&%1=%2'.arg(param).arg(params[param])
-//            }
-//            console.debug(url)
-//            return url
-//        }
 
         function testLoginFinished(urlString) {
             var finishRegExp = new RegExp(root.serviceInfo.loginCompleteRegexp);
@@ -88,7 +81,6 @@ Item {
         lineHeight: 1.13
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
-//        color: "#343434"
         wrapMode: Text.WordWrap
 
         maximumLineCount: 2
@@ -112,9 +104,7 @@ Item {
          Material.foreground: Material.LightBlue
 
         font {
-            //family: root.uiStyle.font.boldFamily
             pixelSize: 24 *root.uiScale.yScale
-            //weight: Font.DemiBold
             letterSpacing: 0.8
             capitalization: Font.AllUppercase
         }
@@ -147,7 +137,7 @@ Item {
         profile: WebEngineProfile {
             persistentCookiesPolicy: WebEngineProfile.NoPersistentCookies
             //storageName: "4"
-            //httpUserAgent: "Mobile"
+            httpUserAgent: "Mobile"
         }
 
         settings {
@@ -168,7 +158,6 @@ Item {
             }
 
             if(loadRequest.url.toString() == internal.logoutURL) {
-                //root.clearAllCookies(webEngine.profile);
                 root.updateLogin(false)
                 webEngine.url = internal.loginURL;
                 return;
