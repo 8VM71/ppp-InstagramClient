@@ -2,6 +2,8 @@ import QtQuick 2.10
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 
+import "service.js" as Service
+
 ApplicationWindow {
     id: window
     visible: true
@@ -19,6 +21,7 @@ ApplicationWindow {
 
     Settings {
         id: appSettings
+
     }
 
     header: ToolBar {
@@ -72,7 +75,7 @@ ApplicationWindow {
 
     StackView {
         id: stackView
-        initialItem: "LoginPage.qml"
+//        initialItem: "LoginPage.qml"
         anchors.fill: parent
     }
 
@@ -96,4 +99,42 @@ ApplicationWindow {
             }
         }
     }
+    Component.onCompleted: {
+        var service = new Service.Service()
+        service.setToken = appSettings.vkToken
+        service.searchUsers("inst", function(reply) {
+            console.debug("Success:", reply.success)
+            if(reply.success) {
+                console.debug("Data:", JSON.stringify(reply.data))
+            } else {
+                console.debug(reply.errorString)
+            }
+        })
+        service.getUserInfo("117812625", function(reply) {
+            console.debug("Success:", reply.success)
+            if(reply.success) {
+                console.debug("User Data:", JSON.stringify(reply.data))
+            } else {
+                console.debug(reply.errorString)
+            }
+        })
+        service.getAppPermissions("117812625", function(reply) {
+            console.debug("Success:", reply.success)
+            if(reply.success) {
+                console.debug("App permissions:", JSON.stringify(reply.data))
+            } else {
+                console.debug(reply.errorString)
+            }
+        })
+        service.getUserPhotos("117812625", function(reply) {
+            console.debug("Success:", reply.success)
+            if(reply.success) {
+                console.debug("User Photos:", JSON.stringify(reply.data))
+            } else {
+                console.debug(reply.errorString)
+            }
+        })
+
+    }
+
 }

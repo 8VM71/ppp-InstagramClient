@@ -39,8 +39,8 @@ Item {
                         "client_id": "6703476",
                         "response_type": "token",
                         "redirect_uri": "https://oauth.vk.com/blank.html",
-                        "scope": "offline,photos",
-                        "v": "5.52",
+                        "scope": "1028",//"offline,photos",
+                        "v": "5.8",
                         "display": "page",
                 }
             }
