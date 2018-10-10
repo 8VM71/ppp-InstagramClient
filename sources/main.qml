@@ -14,12 +14,11 @@ ApplicationWindow {
         yScale: window.height / 800
     }
 
-    Material.theme: Material.Dark
+    Material.theme: Material.Light
     Material.accent: Material.Purple
 
     Settings {
         id: appSettings
-
     }
 
     header: ToolBar {
@@ -64,7 +63,15 @@ ApplicationWindow {
                 text: qsTr("Поиск")
                 width: parent.width
                 onClicked: {
-                    stackView.push("SearchPage.qml")
+                    stackView.push(searchPage)
+                    drawer.close()
+                }
+            }
+            ItemDelegate {
+                text: qsTr("Рейтинг")
+                width: parent.width
+                onClicked: {
+                    stackView.push(ratePage)
                     drawer.close()
                 }
             }
@@ -73,7 +80,7 @@ ApplicationWindow {
 
     StackView {
         id: stackView
-//        initialItem: "LoginPage.qml"
+        initialItem: searchPage
         anchors.fill: parent
     }
 
@@ -93,8 +100,16 @@ ApplicationWindow {
         id: searchPage
         SearchPage {
             onNext: {
-
+                console.debug("Push rate page")
+                stackView.push(ratePage, {userObject : user})
             }
+        }
+    }
+
+    Component {
+        id: ratePage
+        UserRatePage {
+
         }
     }
     Component.onCompleted: {

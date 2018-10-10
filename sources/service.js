@@ -2,8 +2,8 @@
 
 //var token = "65864d4e5c038b45da86a38e1f00b4b245095dbad3f1637d3ffae8c3bf35be6633be403820126dcae4294";
 
-function Service() {
-
+function Service(token) {
+    this.token = token
 }
 
 Service.prototype.setToken = function(token) {

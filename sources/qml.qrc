@@ -7,7 +7,7 @@
         <file>SearchPage.qml</file>
         <file>service.js</file>
         <file>utils.js</file>
-
         <file>Settings.qml</file>
+        <file>UserRatePage.qml</file>
     </qresource>
 </RCC>
