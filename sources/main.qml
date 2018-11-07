@@ -5,8 +5,8 @@ import QtQuick.Controls.Material 2.2
 ApplicationWindow {
     id: window
     visible: true
-    width: 800
-    height: 800
+    width: 750
+    height: 600
     title: Application.name
 
     property Scale uiScale: Scale {
@@ -45,7 +45,7 @@ ApplicationWindow {
 
     Drawer {
         id: drawer
-        width: window.width * 0.66
+        width: window.width * 0.30
         height: window.height
 
         Column {

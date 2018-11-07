@@ -9,5 +9,6 @@
         <file>utils.js</file>
         <file>Settings.qml</file>
         <file>UserRatePage.qml</file>
+        <file>images/formula.svg</file>
     </qresource>
 </RCC>

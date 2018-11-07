@@ -61,7 +61,7 @@ Item {
                 height: 60
                 Material.elevation: 5
                 TextField {
-
+                    id: inputTextField
                     width: parent.width
 
                     onTextChanged: {
