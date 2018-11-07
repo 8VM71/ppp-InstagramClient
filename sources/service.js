@@ -91,3 +91,18 @@ Service.prototype.getUserPhotos = function(userId, callback) {
 
     this.sendGetRequest(url, callback)
 }
+
+Service.prototype.getUserPosts = function(userId, callback) {
+    var url = "https://api.vk.com/method/wall.get";
+    var queryParams = {
+        owner_id : userId,
+        count : "100",
+        filter : "owner",
+        v : "5.8",
+        access_token : this.token
+    };
+
+    url = Utils.combineUrl(url, queryParams);
+
+    this.sendGetRequest(url, callback);
+}
