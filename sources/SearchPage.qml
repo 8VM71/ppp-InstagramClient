@@ -39,11 +39,39 @@ Item {
         }
     }
 
+    Item {
+        id: searchTextItem
+
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+            topMargin: 10
+        }
+
+        height: 80
+        width: 700
+
+        Pane {
+            width: parent.width
+            height: 60
+            Material.elevation: 5
+            TextField {
+                id: inputTextField
+                width: parent.width
+                focus: true
+
+                onTextChanged: {
+                    internal.search(text)
+                }
+            }
+        }
+    }
+
     ListView {
         id: searchResultsView
 
         anchors {
-            top: parent.top
+            top: searchTextItem.bottom
             horizontalCenter: parent.horizontalCenter
             topMargin: 10
             bottom: parent.bottom
@@ -51,24 +79,6 @@ Item {
 
         model: ListModel {
             id: resultsModel
-        }
-        header: Item {
-            height: 80
-            width: parent.width
-
-            Pane {
-                width: parent.width
-                height: 60
-                Material.elevation: 5
-                TextField {
-                    id: inputTextField
-                    width: parent.width
-
-                    onTextChanged: {
-                        internal.search(text)
-                    }
-                }
-            }
         }
 
         spacing: 10
