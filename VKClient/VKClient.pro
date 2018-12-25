@@ -1,4 +1,4 @@
-include(../thirdparty/amqpcpp/amqpcpp.pri)
+include(../thirdparty/qamqp/qamqp.pri)
 
 QT += quick
 CONFIG += c++14

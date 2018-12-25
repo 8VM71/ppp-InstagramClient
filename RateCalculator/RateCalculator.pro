@@ -1,4 +1,4 @@
-include(../thirdparty/amqpcpp/amqpcpp.pri)
+include(../thirdparty/qamqp/qamqp.pri)
 
 QT -= gui
 
@@ -17,11 +17,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp \
-        connectionhandler.cpp
+        main.cpp
 
-HEADERS += \
-        connectionhandler.h
+HEADERS +=
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
