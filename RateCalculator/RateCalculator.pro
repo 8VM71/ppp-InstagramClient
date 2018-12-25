@@ -1,3 +1,5 @@
+include(../thirdparty/amqpcpp/amqpcpp.pri)
+
 QT -= gui
 
 CONFIG += c++11 console
