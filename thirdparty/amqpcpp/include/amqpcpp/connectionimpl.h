@@ -126,12 +126,6 @@ protected:
     std::queue<CopiedBuffer> _queue;
     
     /**
-     *  Is the connection idle (meaning: a heartbeat is necessary)
-     *  @var    bool
-     */
-    bool _idle = true;
-
-    /**
      *  Helper method to send the close frame
      *  Return value tells if the connection is still valid
      *  @return bool
@@ -224,10 +218,11 @@ public:
     }
 
     /**
-     *  Are we fully connected?
+     *  Are we fully connected and ready for instructions? This is true after the initial
+     *  protocol and login handshake were completed.
      *  @return bool
      */
-    bool connected() const
+    bool ready() const
     {
         // state must be connected
         return _state == state_connected;
@@ -432,9 +427,9 @@ public:
     }
 
     /**
-     *  Set the heartbeat delay
-     *  @param  heartbeat       suggested heartbeat by server
-     *  @return uint16_t        accepted heartbeat by client
+     *  Set the heartbeat timeout
+     *  @param  heartbeat       suggested heartbeat timeout by server
+     *  @return uint16_t        accepted heartbeat timeout from client
      */
     uint16_t setHeartbeat(uint16_t heartbeat)
     {
@@ -453,11 +448,9 @@ public:
     
     /**
      *  Send a heartbeat to keep the connection alive
-     *  By default, this function does nothing if the connection is not in an idle state
-     *  @param  force           always send the heartbeat, even if the connection is not idle
      *  @return bool
      */
-    bool heartbeat(bool force=false);
+    bool heartbeat();
 
     /**
      *  The actual connection is a friend and can construct this class

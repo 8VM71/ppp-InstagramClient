@@ -20,6 +20,7 @@
  *  Dependencies
  */
 #include <ev.h>
+#include <list>
 #include "amqpcpp/linux_tcp.h"
 
 /**
@@ -173,34 +174,29 @@ private:
         
         /**
          *  IO-watchers to monitor filedescriptors
-         *  @var std::vector
+         *  @var std::list
          */
-        std::vector<std::unique_ptr<Watcher>> _watchers;
+        std::list<Watcher> _watchers;
         
         /**
          *  When should we send the next heartbeat?
          *  @var ev_tstamp
          */
-        ev_tstamp _next;
+        ev_tstamp _next = 0.0;
         
         /**
          *  When does the connection expire / was the server for a too longer period of time idle?
+         *  During connection setup, this member is used as the connect-timeout.
          *  @var ev_tstamp
          */
         ev_tstamp _expire;
         
         /**
-         *  Are heartbeats enabled?
-         *  @var bool
-         */
-        bool _enabled = false;
-        
-        /**
-         *  Interval between heartbeats
+         *  Interval between heartbeats (we should send every interval / 2 a new heartbeat)
+         *  Value zero means heartbeats are disabled, or not yet negotiated.
          *  @var uint16_t
          */
-        uint16_t _interval;
-        
+        uint16_t _interval = 0;
 
         /**
          *  Callback method that is called by libev when the timer expires
@@ -222,35 +218,47 @@ private:
          */
         virtual void onExpired() override
         {
-            // do nothing if heartbeats are not enabled
-            if (!_enabled) return;
-            
             // get the current time
             ev_tstamp now = ev_now(_loop);
             
-            // should we send out a new heartbeat?
-            if (now >= _next)
+            // if the onNegotiate method was not yet called, and no heartbeat interval was negotiated
+            if (_interval == 0)
             {
-                // send a heartbeat frame
-                _connection->heartbeat();
+                // there is a theoretical scenario in which the onNegotiate() method
+                // was overridden, so that the connection-timeout-timer expires, but 
+                // the connection is ready anyway -- in that case we should ignore the timeout
+                if (_connection->ready()) return;
                 
-                // remember when we should send out the next one
-                _next += _interval;
-            }
-            
-            // was the server idle for a too longer period of time?
-            if (now >= _expire)
-            {
-                // close the connection with immediate effect (this will destruct the connection)
+                // the timer expired because the connection could not be set up in time,
+                // close the connection with immediate effect
                 _connection->close(true);
             }
             else
             {
-                // find the earliest thing that expires
-                _timer.repeat = std::min(_next, _expire) - now;
-                
-                // restart the timer
-                ev_timer_again(_loop, &_timer);
+                // the connection is alive, and heartbeats are needed, should we send a new one?
+                if (now >= _next)
+                {
+                    // send a heartbeat frame
+                    _connection->heartbeat();
+                    
+                    // remember when we should send out the next one
+                    _next += std::max(_interval / 2, 1);
+                }
+            
+                // was the server idle for a too longer period of time?
+                if (now >= _expire)
+                {
+                    // close the connection with immediate effect (this will destruct the connection)
+                    _connection->close(true);
+                }
+                else
+                {
+                    // find the earliest thing that expires
+                    _timer.repeat = std::min(_next, _expire) - now;
+                    
+                    // restart the timer
+                    ev_timer_again(_loop, &_timer);
+                }
             }
         }
         
@@ -262,7 +270,7 @@ private:
         virtual void onActive(int fd, int events) override
         {
             // if the server is readable, we have some extra time before it expires
-            if (events & EV_READ) _expire = ev_now(_loop) + _interval * 2;
+            if (_interval != 0 && (events & EV_READ)) _expire = ev_now(_loop) + _interval;
             
             // pass on to the connection
             _connection->process(fd, events);
@@ -274,20 +282,20 @@ private:
          *  Constructor
          *  @param  loop            The current event loop
          *  @param  connection      The TCP connection
-         *  @param  interval        Timer interval
+         *  @param  timeout         Connect timeout
          */
-        Wrapper(struct ev_loop *loop, AMQP::TcpConnection *connection, uint16_t timeout) : 
+        Wrapper(struct ev_loop *loop, AMQP::TcpConnection *connection, uint16_t timeout = 60) : 
             _connection(connection),
             _loop(loop),
-            _next(ev_now(loop) + timeout),
-            _expire(ev_now(loop) + timeout * 2),
-            _interval(timeout)
+            _next(0.0),
+            _expire(ev_now(loop) + timeout),
+            _interval(0)
         {
             // store the object in the data "void*"
             _timer.data = this;
             
-            // initialize the libev structure
-            ev_timer_init(&_timer, callback, timeout, timeout);
+            // initialize the libev structure, it should expire after the connection timeout
+            ev_timer_init(&_timer, callback, timeout, 0.0);
 
             // start the timer (this is the time that we reserve for setting up the connection)
             ev_timer_start(_loop, &_timer);
@@ -315,17 +323,34 @@ private:
             // stop the timer
             ev_timer_stop(_loop, &_timer);
         }
-        
+
         /**
          *  Start the timer (and expose the interval)
-         *  @return uint16_t
+         *  @param  interval        the heartbeat interval proposed by the server
+         *  @return uint16_t        the heartbeat interval that we accepted
          */
-        uint16_t start()
+        uint16_t start(uint16_t interval)
         {
-            // remember that heartbeats are enabled
-            _enabled = true;
+            // we now know for sure that the connection was set up
+            _interval = interval;
             
-            // expose the interval (the timer is already running, so we do not have to explicitly start it)
+            // if heartbeats are disabled we do not have to set it
+            if (_interval == 0) return 0;
+            
+            // calculate current time
+            auto now = ev_now(_loop);
+            
+            // we also know when the next heartbeat should be sent
+            _next = now + std::max(1, _interval / 2);
+
+            // find the earliest thing that expires
+            // @todo does this work?
+            _timer.repeat = std::min(_next, _expire) - now;
+            
+            // restart the timer
+            ev_timer_again(_loop, &_timer);
+            
+            // expose the accepted interval
             return _interval;
         }
         
@@ -351,11 +376,11 @@ private:
             if (events == 0)
             {
                 // remove the io-watcher
-                _watchers.erase(std::remove_if(_watchers.begin(), _watchers.end(), [fd](const std::unique_ptr<Watcher> &watcher) -> bool {
+                _watchers.remove_if([fd](const Watcher &watcher) -> bool {
                     
                     // compare filedescriptors
-                    return watcher->contains(fd);
-                }), _watchers.end());
+                    return watcher.contains(fd);
+                });
             }
             else
             {
@@ -363,11 +388,14 @@ private:
                 for (auto &watcher : _watchers)
                 {
                     // do we have a match?
-                    if (watcher->contains(fd)) return watcher->events(events);
+                    if (watcher.contains(fd)) return watcher.events(events);
                 }
                 
+                // we need a watcher
+                Watchable *watchable = this;
+                
                 // we should monitor a new filedescriptor
-                _watchers.emplace_back(new Watcher(_loop, this, fd, events));
+                _watchers.emplace_back(_loop, watchable, fd, events);
             }
         }
     };
@@ -377,36 +405,32 @@ private:
      *  @var struct ev_loop*
      */
     struct ev_loop *_loop;
-
+    
     /**
      *  Each connection is wrapped
-     *  @var std::vector
+     *  @var std::list
      */
-    std::vector<std::unique_ptr<Wrapper>> _wrappers;
-
+    std::list<Wrapper> _wrappers;
 
     /**
-     *  Lookup a connection-wrapper
+     *  Lookup a connection-wrapper, when the wrapper is not found, we construct one
      *  @param  connection
      *  @return Wrapper
      */
-    Wrapper *lookup(TcpConnection *connection)
+    Wrapper &lookup(TcpConnection *connection)
     {
         // look for the appropriate connection
         for (auto &wrapper : _wrappers)
         {
             // do we have a match?
-            if (wrapper->contains(connection)) return wrapper.get();
+            if (wrapper.contains(connection)) return wrapper;
         }
         
-        // we need a new wrapper
-        auto *wrapper = new Wrapper(_loop, connection, 60);
-
         // add to the wrappers
-        _wrappers.emplace_back(wrapper);
+        _wrappers.emplace_back(_loop, connection);
         
         // done
-        return wrapper;
+        return _wrappers.back();
     }
 
     /**
@@ -415,10 +439,10 @@ private:
      *  @param  fd          The filedescriptor to be monitored
      *  @param  flags       Should the object be monitored for readability or writability?
      */
-    virtual void monitor(TcpConnection *connection, int fd, int flags) override
+    virtual void monitor(TcpConnection *connection, int fd, int flags) override final
     {
         // lookup the appropriate wrapper and start monitoring
-        lookup(connection)->monitor(fd, flags);
+        lookup(connection).monitor(fd, flags);
     }
 
 protected:
@@ -430,8 +454,8 @@ protected:
      */
     virtual uint16_t onNegotiate(TcpConnection *connection, uint16_t interval) override
     {
-        // lookup the wrapper
-        return lookup(connection)->start();
+        // lookup the wrapper, and start the timer to check for activity and send heartbeats
+        return lookup(connection).start(interval);
     }
 
     /**
@@ -441,9 +465,9 @@ protected:
     virtual void onDetached(TcpConnection *connection) override
     {
         // remove from the array
-        _wrappers.erase(std::remove_if(_wrappers.begin(), _wrappers.end(), [connection](const std::unique_ptr<Wrapper> &wrapper) -> bool {
-            return wrapper->contains(connection);
-        }), _wrappers.end());
+        _wrappers.remove_if([connection](const Wrapper &wrapper) -> bool {
+            return wrapper.contains(connection);
+        });
     }
 
 public:
