@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QDebug>
+#include <QThread>
 
 #include "moduleitem.h"
 
@@ -27,6 +28,7 @@ void ModuleLoader::setModuleDirPath(const QString &moduleDirPath)
 
 void ModuleLoader::load()
 {
+    qDebug() << __FUNCTION__ << QThread::currentThreadId();
     QDir moduleDir(m_moduleDirPath);
 
     for (auto moduleName : moduleDir.entryInfoList(QDir::Files))

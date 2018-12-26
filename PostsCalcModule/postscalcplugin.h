@@ -13,6 +13,17 @@ public:
     PostsCalcPlugin(QObject *parent = nullptr);
 
     // IValueCalc interface
-    double calcValue(network::IHttpService* service) override;
+    void setService(network::IHttpService *service) override;
+    void setToken(const QString &token) override;
+    void setUserId(const QString &id) override;
+    void calcValue(PerformCallback callback) override;
+
+private:
+    RateEntity calcRate(const QJsonObject &data);
+
+private:
+    network::IHttpService* m_service;
+    QString m_token;
+    QString m_userId;
 };
 

@@ -2,12 +2,27 @@
 
 #include <QObject>
 #include "ihttpservice.h"
+#include <functional>
+
+struct RateEntity
+{
+    double rate = 0;
+    QVariantMap data;
+};
+
+using PerformCallback = std::function<void(RateEntity)>;
 
 class IValueCalc
 {
 public:
     virtual ~IValueCalc() = default;
-    virtual double calcValue(network::IHttpService* service) = 0;
+
+    virtual void setService(network::IHttpService* service) = 0;
+    virtual void setToken(const QString &token) = 0;
+    virtual void setUserId(const QString &id) = 0;
+
+    virtual void calcValue(PerformCallback callback) = 0;
+
 };
 
 #define IValueCalc_iid "com.VKClient.IValueCalc/1.0"

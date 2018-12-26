@@ -26,5 +26,7 @@ double ModuleItem::getValue(network::IHttpService *service)
 
     auto module = dynamic_cast<IValueCalc*>(m_loader.instance());
 
-    return module ? module->calcValue(service) : 0;
+    return 0;
+
+//    return module ? module->calcValue(service) : 0;
 }
