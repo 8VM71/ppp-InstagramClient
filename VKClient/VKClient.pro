@@ -1,7 +1,7 @@
 include(../thirdparty/qamqp/qamqp.pri)
 
-QT += quick
-CONFIG += c++14
+QT += network quick
+CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -16,12 +16,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         sources/main.cpp \
-    sources/customnetworkmanagerfactory.cpp
+    sources/customnetworkmanagerfactory.cpp \
+    sources/sender.cpp
 
 HEADERS += \
-    sources/customnetworkmanagerfactory.h
+    sources/customnetworkmanagerfactory.h \
+    sources/sender.h
 
 RESOURCES += sources/qml.qrc
+
+#INCLUDEPATH += $$[QT_INSTALL_PREFIX]/include/qamqp
+#LIBS += -L$$[QT_INSTALL_PREFIX] -lqamqp0
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

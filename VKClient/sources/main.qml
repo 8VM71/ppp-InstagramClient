@@ -113,6 +113,7 @@ ApplicationWindow {
         }
     }
     Component.onCompleted: {
+        sender.start();
     }
 
 }
