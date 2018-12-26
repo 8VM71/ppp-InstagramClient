@@ -2,6 +2,9 @@
 #include <QQmlApplicationEngine>
 #include "customnetworkmanagerfactory.h"
 
+#include "loader/moduleloader.h"
+#include "network/httpservice.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -13,6 +16,14 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     CustomNetworkManagerFactory networkAccessManagerFactory(&app);
+
+    loader::ModuleLoader loader;
+    network::HttpService httpService;
+
+    loader.setModuleDirPath(QCoreApplication::applicationDirPath() + "/modules");
+    loader.setHttpService(&httpService);
+    loader.load();
+
     engine.setNetworkAccessManagerFactory(&networkAccessManagerFactory);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
