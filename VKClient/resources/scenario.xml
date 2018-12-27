@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <modules>
+        <module name="PhotosCalcModule" path="modules/PhotosCalcModule.dll"/>
+        <module name="PostsCalcModule" path="modules/PostsCalcModule.dll"/>
+    </modules>
+    <formula>
+        <plus>
+            <moduleCall name="X" call="PhotosCalcModule"/>
+            <moduleCall name="Y" call="PostsCalcModule"/>
+        </plus>
+    </formula>
+</scenario>

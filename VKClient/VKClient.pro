@@ -16,7 +16,9 @@ HEADERS += \
 SOURCES += \
     $$files($$PWD/src/*.cpp, true)
 
-RESOURCES += $$PWD/ui/qml.qrc
+RESOURCES += \
+    $$PWD/ui/qml.qrc \
+    $$PWD/resources/resources.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

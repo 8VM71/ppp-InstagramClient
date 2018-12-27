@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include "network/httpservice.h"
+#include "moduleitem.h"
 
 using namespace network;
 
@@ -13,8 +14,7 @@ class ModuleLoader : public QObject
 public:
     explicit ModuleLoader(QObject *parent = nullptr);
 
-    QString moduleDirPath() const;
-    void setModuleDirPath(const QString &moduleDirPath);
+    void updateModules(const QMap<QString, QString> &modules);
 
     void load();
 
@@ -25,8 +25,9 @@ signals:
 public slots:
 
 private:
-    QString m_moduleDirPath;
     HttpService* m_httpService;
+
+    QList<ModuleItemPtr> m_modules;
 };
 
 }

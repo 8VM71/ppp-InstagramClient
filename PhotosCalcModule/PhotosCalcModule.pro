@@ -2,7 +2,7 @@ include($$PWD/../VKClient/common.pri)
 
 QT       += core gui
 
-TARGET = GetPhotosValueModule
+TARGET = PhotosCalcModule
 TEMPLATE = lib
 CONFIG += plugin c++11
 

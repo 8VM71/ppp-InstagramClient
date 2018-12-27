@@ -4,9 +4,10 @@
 
 using namespace loader;
 
-ModuleItem::ModuleItem(const QString &path, QObject *parent)
+ModuleItem::ModuleItem(const QString &name, const QString &path, QObject *parent)
     : QObject(parent)
     , m_path(path)
+    , m_name(name)
 {
     m_loader.setFileName(m_path);
 }
@@ -29,4 +30,14 @@ double ModuleItem::getValue(network::IHttpService *service)
     return 0;
 
 //    return module ? module->calcValue(service) : 0;
+}
+
+QString ModuleItem::getName() const
+{
+    return m_name;
+}
+
+void ModuleItem::setName(const QString &name)
+{
+    m_name = name;
 }

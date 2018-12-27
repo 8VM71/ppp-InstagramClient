@@ -4,6 +4,7 @@
 
 #include "loader/moduleloader.h"
 #include "network/httpservice.h"
+#include "xmlparser.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,14 +16,19 @@ int main(int argc, char *argv[])
     app.setApplicationName("User rate");
 
     QQmlApplicationEngine engine;
+
     CustomNetworkManagerFactory networkAccessManagerFactory(&app);
 
     loader::ModuleLoader loader;
     network::HttpService httpService;
+    XmlParser xmlParser;
 
-    loader.setModuleDirPath(QCoreApplication::applicationDirPath() + "/modules");
+    auto scenario = xmlParser.parseScenario();
+
     loader.setHttpService(&httpService);
+    loader.updateModules(scenario.modules);
     loader.load();
+
 
     engine.setNetworkAccessManagerFactory(&networkAccessManagerFactory);
 

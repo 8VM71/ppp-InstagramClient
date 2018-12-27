@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QThread>
 
-#include "moduleitem.h"
+#include <QCoreApplication>
 
 using namespace loader;
 
@@ -16,30 +16,33 @@ ModuleLoader::ModuleLoader(QObject *parent)
 
 }
 
-QString ModuleLoader::moduleDirPath() const
+void ModuleLoader::updateModules(const QMap<QString, QString> &modules)
 {
-    return m_moduleDirPath;
-}
+    qDebug() << __FUNCTION__ << modules;
 
-void ModuleLoader::setModuleDirPath(const QString &moduleDirPath)
-{
-    m_moduleDirPath = moduleDirPath;
+    m_modules.clear();
+    for (auto key : modules.keys())
+    {
+        QString path = QCoreApplication::applicationDirPath() + "/" + modules.value(key);
+        auto item = std::make_shared<ModuleItem>(key, path);
+        qDebug() << __FUNCTION__ << path;
+        m_modules.append(item);
+    }
 }
 
 void ModuleLoader::load()
 {
-    qDebug() << __FUNCTION__ << QThread::currentThreadId();
-    QDir moduleDir(m_moduleDirPath);
-
-    for (auto moduleName : moduleDir.entryInfoList(QDir::Files))
+    for (auto module : m_modules)
     {
-        if (moduleName.suffix() != "dll")
-            continue;
+        qDebug() << __FUNCTION__ << module->getName();
 
-        ModuleItem module(moduleName.absoluteFilePath());
-        if (module.load())
+        if (module->load())
         {
-            qDebug() << moduleName.baseName() << "value" << module.getValue(m_httpService);
+            qDebug() << module->getName() << "value" << module->getValue(m_httpService);
+        }
+        else
+        {
+            qWarning() << module->getName() << "module load failed";
         }
     }
 }

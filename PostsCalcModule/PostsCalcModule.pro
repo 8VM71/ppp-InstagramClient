@@ -15,7 +15,6 @@ SOURCES += \
 
 HEADERS += \
         postscalcplugin.h
-DISTFILES += PostsCalcModule.json 
 
 unix {
     target.path = /usr/lib
