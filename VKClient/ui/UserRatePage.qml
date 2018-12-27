@@ -12,38 +12,42 @@ Item {
 
     signal back
 
-    QtObject {
-        id: photos
-        property int totalCount: 0
-        property int shownCount: 0
-        property int likes: 0
-        property int reposts: 0
+    property var photos: calculator.photosData
+    property var posts: calculator.postsData
+    property real userRate: calculator.userRate
 
-        property int rate: 0
+//    QtObject {
+//        id: photos
+//        property int totalCount: 0
+//        property int shownCount: 0
+//        property int likes: 0
+//        property int reposts: 0
 
-        function calcRate() {
-            if (shownCount <= 0)
-                rate = 0;
-            rate = ((likes + reposts) / shownCount ) * totalCount / shownCount
-        }
-    }
+//        property int rate: 0
 
-    QtObject {
-        id: posts
-        property int totalCount: 0
-        property int shownCount: 0
-        property int likes: 0
-        property int reposts: 0
-        property int comments: 0
+//        function calcRate() {
+//            if (shownCount <= 0)
+//                rate = 0;
+//            rate = ((likes + reposts) / shownCount ) * totalCount / shownCount
+//        }
+//    }
 
-        property int rate: 0
+//    QtObject {
+//        id: posts
+//        property int totalCount: 0
+//        property int shownCount: 0
+//        property int likes: 0
+//        property int reposts: 0
+//        property int comments: 0
 
-        function calcRate() {
-            if (shownCount <= 0)
-                rate = 0;
-            rate = ((likes + reposts + comments) / shownCount ) * totalCount / shownCount
-        }
-    }
+//        property int rate: 0
+
+//        function calcRate() {
+//            if (shownCount <= 0)
+//                rate = 0;
+//            rate = ((likes + reposts + comments) / shownCount ) * totalCount / shownCount
+//        }
+//    }
 
     QtObject {
         id: internal
@@ -51,68 +55,70 @@ Item {
         property var service: new Service.Service(appSettings.vkToken)
 
         function getUserInfo(userId) {
-            internal.service.getUserPhotos(userId, function(result) {
-//                console.debug("result:", JSON.stringify(result))
-                if(result.success) {
-                    var data = result.data;
-//                    console.debug("getUserPhotos success")
-                    var response = data.response;
-                    photos.totalCount = response.count;
-//                    console.debug("photos count = ", response.count)
 
-                    photos.shownCount = response.items.length;
-//                    console.debug("items count = ", response.items.length)
+            calculator.calcRate(userId, appSettings.vkToken)
+//            internal.service.getUserPhotos(userId, function(result) {
+////                console.debug("result:", JSON.stringify(result))
+//                if(result.success) {
+//                    var data = result.data;
+////                    console.debug("getUserPhotos success")
+//                    var response = data.response;
+//                    photos.totalCount = response.count;
+////                    console.debug("photos count = ", response.count)
 
-                    var likes = response.items.reduce(function(sum, current) {
-                        return sum + current.likes.count;
-                    }, 0);
-                    photos.likes = likes;
-//                    console.debug("total 100 photos likes = ", likes)
-                    var reposts = response.items.reduce(function(sum, current) {
-                        return sum + current.reposts.count;
-                    }, 0);
-                    photos.reposts = reposts;
-//                    console.debug("total 100 photos reposts = ", reposts)
+//                    photos.shownCount = response.items.length;
+////                    console.debug("items count = ", response.items.length)
 
-                    photos.calcRate()
+//                    var likes = response.items.reduce(function(sum, current) {
+//                        return sum + current.likes.count;
+//                    }, 0);
+//                    photos.likes = likes;
+////                    console.debug("total 100 photos likes = ", likes)
+//                    var reposts = response.items.reduce(function(sum, current) {
+//                        return sum + current.reposts.count;
+//                    }, 0);
+//                    photos.reposts = reposts;
+////                    console.debug("total 100 photos reposts = ", reposts)
 
-                }
-            });
+//                    photos.calcRate()
 
-            internal.service.getUserPosts(userId, function(result) {
-//                console.debug("result:", JSON.stringify(result))
-                if(result.success) {
-                    var data = result.data;
-//                    console.debug("getUserPosts success")
-                    var response = data.response;
-                    posts.totalCount = response.count;
-//                    console.debug("posts count = ", response.count)
+//                }
+//            });
 
-                    posts.shownCount = response.items.length
-//                    console.debug("items count = ", response.items.length)
+//            internal.service.getUserPosts(userId, function(result) {
+////                console.debug("result:", JSON.stringify(result))
+//                if(result.success) {
+//                    var data = result.data;
+////                    console.debug("getUserPosts success")
+//                    var response = data.response;
+//                    posts.totalCount = response.count;
+////                    console.debug("posts count = ", response.count)
 
-                    var comments = response.items.reduce(function(sum, current) {
-                        return sum + current.comments.count;
-                    }, 0);
+//                    posts.shownCount = response.items.length
+////                    console.debug("items count = ", response.items.length)
 
-                    posts.comments = comments;
-//                    console.debug("total 100 posts comments = ", comments)
-                    var likes = response.items.reduce(function(sum, current) {
-                        return sum + current.likes.count;
-                    }, 0);
+//                    var comments = response.items.reduce(function(sum, current) {
+//                        return sum + current.comments.count;
+//                    }, 0);
 
-                    posts.likes = likes;
-//                    console.debug("total 100 posts likes = ", likes)
-                    var reposts = response.items.reduce(function(sum, current) {
-                        return sum + current.reposts.count;
-                    }, 0);
+//                    posts.comments = comments;
+////                    console.debug("total 100 posts comments = ", comments)
+//                    var likes = response.items.reduce(function(sum, current) {
+//                        return sum + current.likes.count;
+//                    }, 0);
 
-                    posts.reposts = reposts;
-//                    console.debug("total 100 posts reposts = ", reposts)
+//                    posts.likes = likes;
+////                    console.debug("total 100 posts likes = ", likes)
+//                    var reposts = response.items.reduce(function(sum, current) {
+//                        return sum + current.reposts.count;
+//                    }, 0);
 
-                    posts.calcRate()
-                }
-            });
+//                    posts.reposts = reposts;
+////                    console.debug("total 100 posts reposts = ", reposts)
+
+//                    posts.calcRate()
+//                }
+//            });
         }
     }
 
@@ -221,7 +227,7 @@ Item {
                 margins: 20
             }
 
-            text: "Индекс популярности: %1".arg(photos.rate + posts.rate)
+            text: "Индекс популярности: %1".arg(root.userRate)//.arg(photos.rate + posts.rate)
         }
     }
 

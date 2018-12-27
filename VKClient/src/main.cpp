@@ -1,10 +1,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include "customnetworkmanagerfactory.h"
 
 #include "loader/moduleloader.h"
 #include "network/httpservice.h"
 #include "xmlparser.h"
+
+#include "ratecalculator.h"
 
 int main(int argc, char *argv[])
 {
@@ -26,11 +29,15 @@ int main(int argc, char *argv[])
     auto scenario = xmlParser.parseScenario();
 
     loader.setHttpService(&httpService);
-    loader.updateModules(scenario.modules);
-    loader.load();
 
+    RateCalculator calculator;
+
+    calculator.setLoader(&loader);
+    calculator.setScenario(scenario);
 
     engine.setNetworkAccessManagerFactory(&networkAccessManagerFactory);
+
+    engine.rootContext()->setContextProperty("calculator", &calculator);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
