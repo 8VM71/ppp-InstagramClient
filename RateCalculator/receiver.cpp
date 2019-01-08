@@ -54,10 +54,15 @@ void Receiver::messageReceived()
 
     double rate = calcRate(data);
 
-    QAmqpExchange *defaultExchange = m_client.createExchange();
-    defaultExchange->publish(QString::number(rate), m_queueName);
+    sendMessage(QString::number(rate));
+}
 
-    qDebug() << " [x] Sent:" << rate;
+void Receiver::sendMessage(const QString &message)
+{
+    QAmqpExchange *defaultExchange = m_client.createExchange();
+    defaultExchange->publish(message, m_queueName);
+
+    qDebug() << " [x] Sent:" << message;
 }
 
 double Receiver::calcRate(const QString &data)

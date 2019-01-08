@@ -51,14 +51,6 @@ Item {
         property int shownCount: 0
         property int likes: 0
         property int reposts: 0
-
-        //property int rate: 0
-
-        //function calcRate() {
-        //    if (shownCount <= 0)
-        //        rate = 0;
-        //    rate = ((likes + reposts) / shownCount ) * totalCount / shownCount
-        //}
     }
 
     QtObject {
@@ -69,14 +61,6 @@ Item {
         property int likes: 0
         property int reposts: 0
         property int comments: 0
-
-        //property int rate: 0
-
-        //function calcRate() {
-        //    if (shownCount <= 0)
-        //        rate = 0;
-        //    rate = ((likes + reposts + comments) / shownCount ) * totalCount / shownCount
-        //}
     }
 
     QtObject {
@@ -90,18 +74,19 @@ Item {
                     var data = result.data;
                     var response = data.response;
 
-                    photos.totalCount = response.count;
-                    photos.shownCount = response.items.length;
-
                     var likes = response.items.reduce(function(sum, current) {
                         return sum + current.likes.count;
                     }, 0);
-                    photos.likes = likes;
+
                     var reposts = response.items.reduce(function(sum, current) {
                         return sum + current.reposts.count;
                     }, 0);
-                    photos.reposts = reposts;
 
+
+                    photos.totalCount = response.count;
+                    photos.shownCount = response.items.length;
+                    photos.likes = likes;
+                    photos.reposts = reposts;
                     photos.valid = true
 
                     root.calcRate()

@@ -29,6 +29,8 @@ private slots:
 
     void messageReceived();
 
+    void sendMessage(const QString& message);
+
 private:
     double calcRate(const QString& data);
 
