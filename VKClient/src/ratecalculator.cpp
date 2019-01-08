@@ -1,5 +1,8 @@
 #include "ratecalculator.h"
 
+
+#include <QDebug>
+
 RateCalculator::RateCalculator(QObject *parent) : QObject(parent)
 {
 }
@@ -21,7 +24,23 @@ double RateCalculator::userRate() const
 
 void RateCalculator::calcRate(const QString &userId, const QString &token)
 {
-    //TODO implement
+    if (!m_loader)
+        return;
+
+    m_loader->updateModules(m_scenario.modules);
+    m_loader->loadAll();
+
+    Formula formula = m_scenario.formula;
+
+    m_totalArgs = formula.args.length();
+    m_currentArg = 0;
+
+    m_currentUserId = userId;
+    m_token = token;
+
+    setUserRate(0);
+
+    calcNext();
 }
 
 void RateCalculator::setPostsData(QVariantMap postsData)
@@ -44,12 +63,49 @@ void RateCalculator::setPhotosData(QVariantMap photosData)
 
 void RateCalculator::setUserRate(double userRate)
 {
-//    qWarning("Floating point comparison needs context sanity check");
+    //    qWarning("Floating point comparison needs context sanity check");
     if (qFuzzyCompare(m_userRate, userRate))
         return;
 
     m_userRate = userRate;
     emit userRateChanged(m_userRate);
+}
+
+void RateCalculator::calcNext()
+{
+    auto args = m_scenario.formula.args;
+
+    if (m_currentArg < 0 || m_currentArg >= args.length())
+        return;
+
+    QString currentModuleName = args[m_currentArg];
+
+    auto moduleItem = m_loader->getModule(currentModuleName);
+
+    if (!moduleItem)
+        return;
+
+    m_currentArg++;
+
+    moduleItem->getValue(m_currentUserId, m_token, [this, moduleItem](RateEntity re){
+
+        qDebug() << "RateCalculator::calcNext" << re.rate << re.data;
+
+        if (moduleItem->getName() == "PhotosCalcModule")
+        {
+            this->setPhotosData(re.data);
+        }
+        else if (moduleItem->getName() == "PostsCalcModule") {
+            this->setPostsData(re.data);
+        }
+
+        if (m_scenario.formula.operation == OperationType::Plus)
+        {
+            this->setUserRate(m_userRate + re.rate);
+        }
+
+        calcNext();
+    });
 }
 
 void RateCalculator::setLoader(loader::ModuleLoader *loader)

@@ -8,6 +8,7 @@ ModuleItem::ModuleItem(const QString &name, const QString &path, QObject *parent
     : QObject(parent)
     , m_path(path)
     , m_name(name)
+    , m_service(nullptr)
 {
     m_loader.setFileName(m_path);
 }
@@ -20,16 +21,27 @@ bool ModuleItem::load()
     return m_loader.load();
 }
 
-double ModuleItem::getValue(network::IHttpService *service)
+void ModuleItem::getValue(const QString &userId, const QString &token, std::function<void(entities::RateEntity)> callback)
 {
     if (!m_loader.isLoaded())
-        return 0;
+    {
+        callback(RateEntity{});
+        return;
+    }
 
     auto module = dynamic_cast<IValueCalc*>(m_loader.instance());
 
-    return 0;
+    if (!module)
+    {
+        callback(RateEntity{});
+        return;
+    }
 
-//    return module ? module->calcValue(service) : 0;
+    module->setUserId(userId);
+    module->setToken(token);
+    module->setService(m_service);
+
+    module->calcValue(callback);
 }
 
 QString ModuleItem::getName() const
@@ -40,4 +52,14 @@ QString ModuleItem::getName() const
 void ModuleItem::setName(const QString &name)
 {
     m_name = name;
+}
+
+network::IHttpService *ModuleItem::getService() const
+{
+    return m_service;
+}
+
+void ModuleItem::setService(network::IHttpService *service)
+{
+    m_service = service;
 }

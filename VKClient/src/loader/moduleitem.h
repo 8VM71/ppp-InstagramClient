@@ -4,6 +4,7 @@
 #include <QPluginLoader>
 #include <memory>
 #include "ihttpservice.h"
+#include "entities.h"
 
 namespace loader {
 
@@ -15,10 +16,13 @@ public:
 
     bool load();
 
-    double getValue(network::IHttpService* service);
+    void getValue(const QString& userId, const QString& token, std::function<void(entities::RateEntity)> callback);
 
     QString getName() const;
     void setName(const QString &name);
+
+    network::IHttpService *getService() const;
+    void setService(network::IHttpService *service);
 
 signals:
 
@@ -28,6 +32,7 @@ private:
     QString m_path;
     QString m_name;
     QPluginLoader m_loader;
+    network::IHttpService* m_service;
 };
 
 using ModuleItemPtr = std::shared_ptr<ModuleItem>;

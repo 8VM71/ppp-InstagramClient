@@ -2,8 +2,15 @@
 
 #include <QMap>
 #include <QString>
+#include <QVariantMap>
 
 namespace entities {
+
+struct RateEntity
+{
+    double rate = 0;
+    QVariantMap data;
+};
 
 enum class OperationType
 {

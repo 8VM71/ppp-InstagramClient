@@ -5,7 +5,7 @@
 #include <QMap>
 #include <QString>
 
-#include "entities/entities.h"
+#include "entities.h"
 
 using namespace entities;
 

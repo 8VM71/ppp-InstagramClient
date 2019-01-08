@@ -3,12 +3,9 @@
 #include <QObject>
 #include "ihttpservice.h"
 #include <functional>
+#include "entities.h"
 
-struct RateEntity
-{
-    double rate = 0;
-    QVariantMap data;
-};
+using namespace entities;
 
 using PerformCallback = std::function<void(RateEntity)>;
 

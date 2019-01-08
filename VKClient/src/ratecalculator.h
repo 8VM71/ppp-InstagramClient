@@ -42,6 +42,9 @@ public slots:
     void setUserRate(double userRate);
 
 private:
+    void calcNext();
+
+private:
 
     QVariantMap m_postsData;
     QVariantMap m_photosData;
@@ -49,6 +52,11 @@ private:
 
     loader::ModuleLoader *m_loader;
     Scenario m_scenario;
+
+    int m_currentArg;
+    int m_totalArgs;
+    QString m_currentUserId;
+    QString m_token;
 };
 
 #endif // RATECALCULATOR_H

@@ -16,9 +16,11 @@ public:
 
     void updateModules(const QMap<QString, QString> &modules);
 
-    void load();
+    void loadAll();
 
     void setHttpService(HttpService *httpService);
+
+    ModuleItemPtr getModule(const QString& name);
 
 signals:
 

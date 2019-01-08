@@ -34,10 +34,11 @@ void PostsCalcPlugin::setUserId(const QString &id)
 
 void PostsCalcPlugin::calcValue(PerformCallback callback)
 {
+    qDebug() << __FUNCTION__;
     if (!m_service)
         callback(RateEntity{});
 
-    QUrl requestUrl("https://api.vk.com/method/photos.getAll");
+    QUrl requestUrl("https://api.vk.com/method/wall.get");
 
     QUrlQuery query;
     query.addQueryItem("owner_id", m_userId);
@@ -48,6 +49,9 @@ void PostsCalcPlugin::calcValue(PerformCallback callback)
 
     requestUrl.setQuery(query);
 
+    qDebug() << __FUNCTION__ << "url" << requestUrl.url();
+
+
     m_service->getRequest(requestUrl, [this, callback](network::ResponsePtr resp){
         if (resp->isError)
         {
@@ -57,7 +61,7 @@ void PostsCalcPlugin::calcValue(PerformCallback callback)
         else
         {
             QJsonDocument doc = QJsonDocument::fromJson(resp->data);
-            auto rate = this->calcRate(doc.object());
+            auto rate = this->calcRate(doc.object().value("response").toObject());
             callback(rate);
         }
     });
@@ -65,6 +69,7 @@ void PostsCalcPlugin::calcValue(PerformCallback callback)
 
 RateEntity PostsCalcPlugin::calcRate(const QJsonObject &data)
 {
+    qDebug() << __FUNCTION__;
     int totalCount = data.value("count").toInt();
 
     auto items = data.value("items").toArray();

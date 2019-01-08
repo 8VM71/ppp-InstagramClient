@@ -4,7 +4,6 @@
 #include <ivaluecalc.h>
 #include <QJsonObject>
 
-
 class PhotosCalcPlugin : public QObject, public IValueCalc
 {
     Q_OBJECT
