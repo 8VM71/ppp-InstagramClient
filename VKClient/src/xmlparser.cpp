@@ -4,14 +4,16 @@
 
 #include <QDebug>
 
-XmlParser::XmlParser(QObject *parent) : QObject(parent)
+XmlParser::XmlParser(QObject *parent)
+    : QObject(parent)
+    , m_scenarioPath(":/scenario.xml")
 {
 
 }
 
 Scenario XmlParser::parseScenario()
 {
-    QFile file(":/scenario.xml");
+    QFile file(m_scenarioPath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         qWarning() << "Open scenario.xml file failed";

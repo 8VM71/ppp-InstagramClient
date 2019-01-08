@@ -5,22 +5,9 @@
 #include <QMap>
 #include <QString>
 
-enum class OperationType
-{
-    Plus
-};
+#include "entities/entities.h"
 
-struct Formula
-{
-    OperationType operation;
-    QList<QString> args;
-};
-
-struct Scenario
-{
-    QMap<QString, QString> modules;
-    Formula formula;
-};
+using namespace entities;
 
 class XmlParser : public QObject
 {
@@ -35,4 +22,5 @@ private:
     Formula parseFormula(QXmlStreamReader &xml);
 
 private:
+    QString m_scenarioPath;
 };

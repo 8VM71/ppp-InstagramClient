@@ -2,7 +2,7 @@ import QtQuick 2.10
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 
-import "service.js" as Service
+//import "service.js" as Service
 
 Item {
     id: root
@@ -52,7 +52,7 @@ Item {
     QtObject {
         id: internal
 
-        property var service: new Service.Service(appSettings.vkToken)
+//        property var service: new Service.Service(appSettings.vkToken)
 
         function getUserInfo(userId) {
 
