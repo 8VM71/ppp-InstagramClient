@@ -32,7 +32,7 @@ void PhotosCalcPlugin::setUserId(const QString &id)
 
 void PhotosCalcPlugin::calcValue(PerformCallback callback)
 {
-    qDebug() << __FUNCTION__;
+//    qDebug() << __FUNCTION__;
     if (!m_service)
         callback(RateEntity{});
 
@@ -47,7 +47,7 @@ void PhotosCalcPlugin::calcValue(PerformCallback callback)
 
     requestUrl.setQuery(query);
 
-    qDebug() << __FUNCTION__ << "url" << requestUrl.url();
+//    qDebug() << __FUNCTION__ << "url" << requestUrl.url();
 
     m_service->getRequest(requestUrl, [this, callback](network::ResponsePtr resp){
         if (resp->isError)
@@ -66,7 +66,7 @@ void PhotosCalcPlugin::calcValue(PerformCallback callback)
 
 RateEntity PhotosCalcPlugin::calcRate(const QJsonObject &data)
 {
-    qDebug() << __FUNCTION__;
+//    qDebug() << __FUNCTION__;
 
     int totalCount = data.value("count").toInt();
 

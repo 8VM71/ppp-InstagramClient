@@ -19,7 +19,7 @@ ModuleLoader::ModuleLoader(QObject *parent)
 
 void ModuleLoader::updateModules(const QMap<QString, QString> &modules)
 {
-    qDebug() << __FUNCTION__ << modules;
+//    qDebug() << __FUNCTION__ << modules;
 
     m_modules.clear();
     for (auto key : modules.keys())
@@ -27,7 +27,7 @@ void ModuleLoader::updateModules(const QMap<QString, QString> &modules)
         QString path = QCoreApplication::applicationDirPath() + "/" + modules.value(key);
         auto item = std::make_shared<ModuleItem>(key, path);
         item->setService(m_httpService);
-        qDebug() << __FUNCTION__ << path;
+//        qDebug() << __FUNCTION__ << path;
         m_modules.append(item);
     }
 }
@@ -36,7 +36,7 @@ void ModuleLoader::loadAll()
 {
     for (auto module : m_modules)
     {
-        qDebug() << __FUNCTION__ << module->getName();
+//        qDebug() << __FUNCTION__ << module->getName();
 
         if (module->load())
         {

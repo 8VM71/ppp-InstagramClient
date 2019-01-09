@@ -89,7 +89,7 @@ void RateCalculator::calcNext()
 
     moduleItem->getValue(m_currentUserId, m_token, [this, moduleItem](RateEntity re){
 
-        qDebug() << "RateCalculator::calcNext" << re.rate << re.data;
+//        qDebug() << "RateCalculator::calcNext" << re.rate << re.data;
 
         if (moduleItem->getName() == "PhotosCalcModule")
         {
