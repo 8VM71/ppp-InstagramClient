@@ -49,7 +49,7 @@ void ModuleLoader::loadAll()
     }
 }
 
-void ModuleLoader::setHttpService(HttpService *httpService)
+void ModuleLoader::setHttpService(IHttpService *httpService)
 {
     m_httpService = httpService;
 }

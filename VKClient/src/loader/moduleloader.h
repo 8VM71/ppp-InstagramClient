@@ -18,7 +18,7 @@ public:
 
     void loadAll();
 
-    void setHttpService(HttpService *httpService);
+    void setHttpService(IHttpService *httpService);
 
     ModuleItemPtr getModule(const QString& name);
 
@@ -27,7 +27,7 @@ signals:
 public slots:
 
 private:
-    HttpService* m_httpService;
+    IHttpService* m_httpService;
 
     QList<ModuleItemPtr> m_modules;
 };
