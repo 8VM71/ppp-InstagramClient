@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "CalculationWebService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "api/values/{'photos':{'totalCount':5,'shownCount':5,'likes':130,'reposts':0},'posts':{'totalCount':23,'shownCount':23,'likes':129,'reposts':2,'comments':4},'factors':{'photo':1.0,'post':1.0}}",
+      "applicationUrl": "http://localhost:5001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
