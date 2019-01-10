@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsWorkflow", "WorkflowConsoleApplication1\WindowsWorkflow.csproj", "{C75BFF33-C6FA-4A3F-AA06-A0E82C3A6DC0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5999F546-C5D5-4E6A-9E4B-713EFDE40556} = {5999F546-C5D5-4E6A-9E4B-713EFDE40556}
+		{697773E8-8E63-4C93-81DC-DF7E2F06772D} = {697773E8-8E63-4C93-81DC-DF7E2F06772D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchWebService", "SearchWebService\SearchWebService.csproj", "{5999F546-C5D5-4E6A-9E4B-713EFDE40556}"
 EndProject
